@@ -60,4 +60,22 @@ public class Tasks {
         }
     }
 
+    public void deleteTaskById(final Long id) {
+        Task task = taskById(id);
+
+        deleteTask(task);
+    }
+
+    public void deleteTask(Task task) {
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction entityTransaction = entityManager.getTransaction();
+        try {
+            entityTransaction.begin();
+            entityManager.remove(task);
+            entityTransaction.commit();
+        } finally {
+            entityManager.close();
+        }
+    }
+
 }
