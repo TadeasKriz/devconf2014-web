@@ -4,9 +4,9 @@ import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceUnit;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:tadeas.kriz@brainwashstudio.com">Tadeas Kriz</a>
@@ -15,11 +15,6 @@ public class Tasks {
 
     @PersistenceUnit(unitName = "tasks")
     private EntityManagerFactory entityManagerFactory;
-
-    @PreDestroy
-    public void closeEntityManagerFactory() {
-        entityManagerFactory.close();
-    }
 
     public Task save(final Task task) {
         final EntityManager entityManager = entityManagerFactory.createEntityManager();

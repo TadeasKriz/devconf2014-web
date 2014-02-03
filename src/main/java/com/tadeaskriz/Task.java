@@ -31,6 +31,9 @@ public class Task {
     @Column
     private Date date;
 
+    public Task() {
+    }
+
     @JsonCreator
     public Task(@JsonProperty("id") final Long id, @JsonProperty("text") final String text, @JsonProperty("done") final boolean done, @JsonProperty("date") final Date date) {
         this.id = id;
