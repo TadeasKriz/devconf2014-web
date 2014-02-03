@@ -1,5 +1,10 @@
 package com.tadeaskriz;
 
+import org.jboss.aerogear.unifiedpush.JavaSender;
+import org.jboss.aerogear.unifiedpush.SenderClient;
+import org.jboss.aerogear.unifiedpush.message.MessageResponseCallback;
+import org.jboss.aerogear.unifiedpush.message.UnifiedMessage;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -43,6 +48,7 @@ public class MainEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     public Task addTask(final Task task) {
         tasks.save(task);
+        sendReloadMessage();
         return task;
     }
 
@@ -53,6 +59,7 @@ public class MainEndpoint {
     public Task saveTask(@PathParam("id") final Long id, final Task task) {
         task.setId(id);
         tasks.save(task);
+        sendReloadMessage();
         return task;
     }
 
@@ -61,10 +68,23 @@ public class MainEndpoint {
     public Response deleteTask(@PathParam("id") final Long id) {
         try {
             tasks.deleteTaskById(id);
+
+            sendReloadMessage();
         } catch (Exception e) {
             return Response.notModified().build();
         }
         return Response.noContent().build();
+    }
+
+    private void sendReloadMessage() {
+        JavaSender sender = new SenderClient("https://devconf2014push-detox.rhcloud.com/");
+
+        UnifiedMessage message =  new UnifiedMessage.Builder()
+                .pushApplicationId("6494eed7-aff9-4910-8f44-312f59d4f89e")
+                .masterSecret("94097a6f-0cce-4486-a8f2-b5df36808dba")
+                .build();
+
+        sender.send(message);
     }
 
 }
