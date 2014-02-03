@@ -1,5 +1,6 @@
 package com.tadeaskriz;
 
+import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,11 +15,13 @@ import java.util.List;
 @Path("/tasks")
 public class MainEndpoint {
 
+    @Inject
+    Tasks tasks;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Task> listTasks(@QueryParam("offset") @DefaultValue("0") final int offset,
                                 @QueryParam("limit") @DefaultValue("10") final int limit) {
-        Tasks tasks = new Tasks();
         return tasks.getTasks(offset, limit);
     }
 
