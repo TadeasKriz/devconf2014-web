@@ -21,7 +21,7 @@ public class Tasks {
         final EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
             entityTransaction.begin();
-            entityManager.persist(task);
+            entityManager.merge(task);
             entityTransaction.commit();
         } catch (final Exception e) {
             entityTransaction.rollback();
