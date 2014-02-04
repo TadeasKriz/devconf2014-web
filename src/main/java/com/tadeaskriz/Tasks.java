@@ -1,6 +1,7 @@
 package com.tadeaskriz;
 
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -13,46 +14,27 @@ import java.util.logging.Logger;
  */
 public class Tasks {
 
-    @PersistenceUnit(unitName = "tasks")
-    private EntityManagerFactory entityManagerFactory;
+    @Inject
+    private EntityManager entityManager;
+//    private EntityManagerFactory entityManagerFactory;
 
-    public Task save(final Task task) {
-        final EntityManager entityManager = entityManagerFactory.createEntityManager();
-        final EntityTransaction entityTransaction = entityManager.getTransaction();
-        try {
-            entityTransaction.begin();
-            entityManager.merge(task);
-            entityTransaction.commit();
-        } catch (final Exception e) {
-            entityTransaction.rollback();
-            throw new RuntimeException(e);
-        } finally {
-            entityManager.close();
-        }
+    public Task save(Task task) {
+        task = entityManager.merge(task);
         return task;
     }
 
     public List<Task> getTasks(final int offset, final int limit) {
-        final EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            return entityManager.createQuery("SELECT task FROM Task task", Task.class)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
-                    .getResultList();
-        } finally {
-            entityManager.close();
-        }
+        return entityManager.createQuery("SELECT task FROM Task task", Task.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
     }
 
     public Task taskById(final Long id) {
-        final EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            return entityManager.createQuery("SELECT task FROM Task task WHERE task.id = :id", Task.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-        } finally {
-            entityManager.close();
-        }
+        return entityManager.createQuery("SELECT task FROM Task task WHERE task.id = :id", Task.class)
+                .setParameter("id", id)
+                .getSingleResult();
+
     }
 
     public void deleteTaskById(final Long id) {
@@ -62,15 +44,7 @@ public class Tasks {
     }
 
     public void deleteTask(Task task) {
-        final EntityManager entityManager = entityManagerFactory.createEntityManager();
-        final EntityTransaction entityTransaction = entityManager.getTransaction();
-        try {
-            entityTransaction.begin();
-            entityManager.remove(task);
-            entityTransaction.commit();
-        } finally {
-            entityManager.close();
-        }
+        entityManager.remove(task);
     }
 
 }
