@@ -2,7 +2,6 @@ package com.tadeaskriz;
 
 import org.jboss.aerogear.unifiedpush.JavaSender;
 import org.jboss.aerogear.unifiedpush.SenderClient;
-import org.jboss.aerogear.unifiedpush.message.MessageResponseCallback;
 import org.jboss.aerogear.unifiedpush.message.UnifiedMessage;
 
 import javax.inject.Inject;
@@ -16,9 +15,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:tadeas.kriz@brainwashstudio.com">Tadeas Kriz</a>
@@ -31,36 +31,38 @@ public class MainEndpoint {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Task> listTasks(@QueryParam("offset") @DefaultValue("0") final int offset,
-                                @QueryParam("limit") @DefaultValue("10") final int limit) {
-        return tasks.getTasks(offset, limit);
+    public Response listTasks(@QueryParam("offset") @DefaultValue("0") final int offset,
+                              @QueryParam("limit") @DefaultValue("10") final int limit) {
+        return Response.ok(tasks.getTasks(offset, limit)).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Task getTask(@PathParam("id") final Long id) {
-        return tasks.taskById(id);
-    }
-
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Task addTask(final Task task) {
-        tasks.save(task);
-        sendReloadMessage();
-        return task;
+    public Response getTask(@PathParam("id") final Long id) {
+        return Response.ok(tasks.taskById(id)).build();
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    public Response addTask(Task task, @Context UriInfo uriInfo) {
+        task = tasks.save(task);
+        sendReloadMessage();
+        return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(task.getId())).build())
+                .entity(task)
+                .build();
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Task saveTask(@PathParam("id") final Long id, final Task task) {
+    public Response saveTask(@PathParam("id") final Long id, final Task task) {
         task.setId(id);
         tasks.save(task);
         sendReloadMessage();
-        return task;
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -71,7 +73,7 @@ public class MainEndpoint {
 
             sendReloadMessage();
         } catch (Exception e) {
-            return Response.notModified().build();
+            e.printStackTrace();
         }
         return Response.noContent().build();
     }
@@ -79,7 +81,7 @@ public class MainEndpoint {
     private void sendReloadMessage() {
         JavaSender sender = new SenderClient("https://devconf2014push-detox.rhcloud.com/");
 
-        UnifiedMessage message =  new UnifiedMessage.Builder()
+        UnifiedMessage message = new UnifiedMessage.Builder()
                 .pushApplicationId("6494eed7-aff9-4910-8f44-312f59d4f89e")
                 .masterSecret("94097a6f-0cce-4486-a8f2-b5df36808dba")
                 .build();
