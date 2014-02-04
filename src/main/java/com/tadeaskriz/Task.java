@@ -28,18 +28,14 @@ public class Task {
     @Column
     private boolean done;
 
-    @Column
-    private Date date;
-
     public Task() {
     }
 
     @JsonCreator
-    public Task(@JsonProperty("id") final Long id, @JsonProperty("text") final String text, @JsonProperty("done") final boolean done, @JsonProperty("date") final Date date) {
+    public Task(@JsonProperty("id") final Long id, @JsonProperty("text") final String text, @JsonProperty("done") final boolean done) {
         this.id = id;
         this.text = text;
         this.done = done;
-        this.date = date;
     }
 
     public Long getId() {
@@ -64,13 +60,5 @@ public class Task {
 
     public void setDone(boolean done) {
         this.done = done;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 }
