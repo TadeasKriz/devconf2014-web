@@ -86,6 +86,7 @@ public class MainEndpoint {
         UnifiedMessage message = new UnifiedMessage.Builder()
                 .pushApplicationId("6494eed7-aff9-4910-8f44-312f59d4f89e")
                 .masterSecret("94097a6f-0cce-4486-a8f2-b5df36808dba")
+                .attribute("reload", "true")
                 .build();
 
         sender.send(message);
