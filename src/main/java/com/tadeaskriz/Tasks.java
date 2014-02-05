@@ -1,13 +1,8 @@
 package com.tadeaskriz;
 
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceUnit;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:tadeas.kriz@brainwashstudio.com">Tadeas Kriz</a>
@@ -16,7 +11,6 @@ public class Tasks {
 
     @Inject
     private EntityManager entityManager;
-//    private EntityManagerFactory entityManagerFactory;
 
     public Task save(Task task) {
         task = entityManager.merge(task);

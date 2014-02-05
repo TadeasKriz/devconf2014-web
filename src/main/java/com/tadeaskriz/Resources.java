@@ -20,13 +20,15 @@ package com.tadeaskriz;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 
 /**
  * @author <a href="mailto:tkriz@redhat.com">Tadeas Kriz</a>
  */
 public class Resources {
 
-    @PersistenceContext
+    @SuppressWarnings("unused")
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)
     @Produces
     private EntityManager entityManager;
 
